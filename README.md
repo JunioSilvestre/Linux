@@ -1,399 +1,1047 @@
+# Linux Engineering & DevOps Laboratory
 
-# Linux DevOps Laboratory
+A hands-on engineering laboratory focused on Linux systems engineering, infrastructure automation, DevOps, cloud infrastructure, observability, reliability, security, containers, Kubernetes and platform engineering.
 
-Laboratory dedicated to Linux, DevOps, Infrastructure, Automation, Cloud, Containers, Kubernetes, Monitoring and Platform Engineering.
+This repository is designed to progressively develop practical engineering capabilities from Linux fundamentals to senior-level infrastructure and platform engineering.
 
-The objective is to build practical Linux and DevOps skills through hands-on exercises, automation, troubleshooting, infrastructure management and production-oriented projects.
+The laboratory emphasizes real operational scenarios, automation, reproducibility, troubleshooting, reliability and production-oriented engineering practices.
 
-## Objectives
+---
 
-* Linux system administration
-* Bash and shell scripting
-* Server administration
-* Networking
-* Security
-* SSH
-* Users and permissions
-* Processes and services
-* systemd
-* Storage and filesystems
-* Logs and troubleshooting
-* Package management
-* DNS
-* Web servers
-* Docker
-* Kubernetes
-* Monitoring and observability
+## Engineering Objectives
+
+The primary objectives of this laboratory are:
+
+* Linux systems administration and engineering
 * Infrastructure automation
-* DevOps practices
-* Platform Engineering fundamentals
-
-## Environment
-
-Primary operating system:
-
-* Ubuntu Server LTS
-* x86_64
-
-Development environment:
-
-* Visual Studio Code
-* Git
-* GitHub
-* Bash
-* SSH
-
-Additional technologies:
-
-* Docker
+* Shell scripting
+* Configuration management
+* Infrastructure as Code
+* Containerization
 * Kubernetes
-* Terraform
-* Ansible
-* Prometheus
-* Grafana
-* Nginx
-* Python
-* C# / .NET
+* CI/CD
+* Cloud infrastructure
+* Networking
+* Security and hardening
+* Monitoring and observability
+* Reliability engineering
+* Incident response
+* Disaster recovery
+* Performance engineering
+* Scalability
+* Platform Engineering
+* DevSecOps
 
-## Repository Structure
+The goal is not only to learn individual technologies, but to understand how they operate together as an engineering platform.
+
+---
+
+# Engineering Philosophy
+
+The laboratory follows several principles commonly used in production environments.
+
+### Automation First
+
+Manual operational procedures should progressively become automated and reproducible.
+
+### Infrastructure as Code
+
+Infrastructure and configuration should be version-controlled whenever practical.
+
+### Reproducibility
+
+Systems should be capable of being rebuilt consistently from documented configuration and automation.
+
+### Observability
+
+Production systems should provide sufficient metrics, logs and traces to understand system behavior.
+
+### Security by Default
+
+Systems should follow least privilege, secure authentication, controlled access and hardened configurations.
+
+### Reliability
+
+Infrastructure should be designed around availability, failure detection, recovery and controlled degradation.
+
+### Idempotency
+
+Automation should be safe to execute repeatedly without producing unintended state changes.
+
+### Documentation
+
+Operational knowledge, architecture decisions and procedures should be documented and version-controlled.
+
+---
+
+# Laboratory Environment
+
+Primary environment:
+
+```text
+Operating System
+Ubuntu Server LTS
+
+Architecture
+x86_64
+
+Development
+Visual Studio Code
+
+Version Control
+Git
+GitHub
+
+Shell
+Bash
+```
+
+Infrastructure technologies:
+
+```text
+Docker
+Docker Compose
+Kubernetes
+Terraform
+Ansible
+Nginx
+```
+
+Observability:
+
+```text
+Prometheus
+Grafana
+ELK
+Loki
+OpenTelemetry
+```
+
+Cloud:
+
+```text
+Microsoft Azure
+Amazon Web Services
+```
+
+Programming and automation:
+
+```text
+Bash
+Python
+C# / .NET
+YAML
+HCL
+```
+
+---
+
+# Repository Architecture
 
 ```text
 Linux/
-├── bash/
-├── system-administration/
-├── networking/
-├── security/
-├── processes/
-├── services/
-├── storage/
-├── logs/
-├── users-permissions/
-├── ssh/
-├── cron/
-├── systemd/
-├── package-management/
-├── dns/
-├── web-server/
-├── docker/
-├── kubernetes/
-├── monitoring/
-├── automation/
+│
+├── README.md
+│
+├── junior/
+│   ├── bash/
+│   ├── filesystem/
+│   ├── users-permissions/
+│   ├── processes/
+│   ├── services/
+│   ├── systemd/
+│   ├── packages/
+│   ├── networking/
+│   ├── ssh/
+│   ├── storage/
+│   ├── logs/
+│   ├── cron/
+│   ├── dns/
+│   ├── web-server/
+│   └── troubleshooting/
+│
+├── mid/
+│   ├── bash-automation/
+│   ├── system-administration/
+│   ├── networking/
+│   ├── security/
+│   ├── storage/
+│   ├── monitoring/
+│   ├── logging/
+│   ├── docker/
+│   ├── docker-compose/
+│   ├── nginx/
+│   ├── ci-cd/
+│   ├── configuration-management/
+│   ├── ansible/
+│   ├── terraform/
+│   ├── cloud/
+│   ├── scripting/
+│   └── troubleshooting/
+│
+├── senior/
+│   ├── linux-engineering/
+│   ├── advanced-networking/
+│   ├── security-hardening/
+│   ├── high-availability/
+│   ├── disaster-recovery/
+│   ├── observability/
+│   ├── prometheus/
+│   ├── grafana/
+│   ├── elk/
+│   ├── kubernetes/
+│   ├── infrastructure-as-code/
+│   ├── cloud-architecture/
+│   ├── platform-engineering/
+│   ├── sre/
+│   ├── devsecops/
+│   ├── incident-response/
+│   ├── performance/
+│   ├── scalability/
+│   └── automation-platform/
+│
 └── projects/
+    ├── junior/
+    ├── mid/
+    └── senior/
 ```
 
-## Learning Path
+---
 
-### 01. Linux Fundamentals
+# Competency Model
+
+The repository is divided into three engineering levels.
+
+## Junior — Foundation
+
+Focus:
+
+```text
+Understand
+Operate
+Troubleshoot
+Document
+```
+
+Core capabilities:
 
 * Linux filesystem
-* Navigation
-* Files and directories
-* File permissions
+* CLI
+* Bash fundamentals
 * Users and groups
-* Environment variables
-* Processes
-* Signals
-* Package management
-* Shell commands
-
-### 02. Bash
-
-* Shell scripting
-* Variables
-* Conditions
-* Loops
-* Functions
-* Arguments
-* Exit codes
-* Pipes
-* Redirection
-* Text processing
-* Automation
-
-### 03. System Administration
-
-* Users
-* Groups
 * Permissions
 * Processes
 * Services
 * systemd
 * Package management
+* SSH
 * Storage
-* Filesystems
-* Resource management
-
-### 04. Networking
-
-* TCP/IP
-* IPv4
-* IPv6
+* Networking fundamentals
 * DNS
-* DHCP
-* Routing
-* Ports
-* Sockets
-* Firewall
-* Network troubleshooting
-* SSH
-
-### 05. Security
-
-* Linux permissions
-* SSH security
-* Firewall
-* sudo
-* Authentication
-* Secrets
-* File security
-* System hardening
-* Security auditing
-
-### 06. Services
-
-* systemd
-* Nginx
-* SSH
-* Scheduled services
-* Service monitoring
-* Service troubleshooting
-
-### 07. Storage
-
-* Filesystems
-* Mounts
-* Disk management
-* LVM
-* Permissions
-* Backups
-* Storage monitoring
-
-### 08. Logs and Troubleshooting
-
-* journalctl
-* system logs
-* application logs
-* log analysis
-* troubleshooting methodology
-* incident investigation
-
-### 09. Docker
-
-* Images
-* Containers
-* Volumes
-* Networks
-* Docker Compose
-* Container troubleshooting
-* Container security
-
-### 10. Kubernetes
-
-* Pods
-* Deployments
-* Services
-* ConfigMaps
-* Secrets
-* Volumes
-* Ingress
-* Namespaces
-* Health checks
-* Scaling
-* Troubleshooting
-
-### 11. Monitoring
-
-* Metrics
 * Logs
-* Alerts
-* Prometheus
-* Grafana
-* System monitoring
-* Application monitoring
-* Infrastructure monitoring
+* Cron
+* Basic troubleshooting
+* Basic web services
 
-### 12. Automation
+Example projects:
 
-Automation using:
+```text
+system-health-check
+system-inventory
+disk-monitor
+memory-monitor
+process-monitor
+service-monitor
+network-check
+dns-check
+http-health-check
+log-analyzer
+backup-manager
+user-manager
+package-manager
+cron-manager
+systemd-manager
+ssh-manager
+```
 
-* Bash
-* Python
+---
+
+# Mid-Level — Automation & Operations
+
+Focus:
+
+```text
+Automate
+Integrate
+Deploy
+Monitor
+Maintain
+```
+
+Core capabilities:
+
+* Advanced Bash
+* Linux administration
+* Networking
+* Security
+* Docker
+* Docker Compose
+* Nginx
+* CI/CD
+* Configuration management
 * Ansible
 * Terraform
-* APIs
-* CLI tools
-
-### 13. DevOps
-
-* Git
-* GitHub
-* CI/CD
-* Build automation
-* Testing
-* Deployment
-* Containers
-* Infrastructure as Code
-* Configuration management
 * Monitoring
 * Logging
-* Security
-
-### 14. Platform Engineering
-
-* Internal developer platforms
 * Infrastructure automation
-* Self-service infrastructure
-* Kubernetes platforms
-* Deployment platforms
-* Developer tooling
+* Cloud fundamentals
+* API automation
+* Python automation
+* Deployment automation
+
+Example projects:
+
+```text
+server-monitoring
+api-monitor
+deployment-automation
+docker-manager
+configuration-manager
+backup-service
+web-service-monitor
+cloud-resource-manager
+infrastructure-automation
+monitoring-service
+log-management
+container-management
+```
+
+---
+
+# Senior — Engineering & Architecture
+
+Focus:
+
+```text
+Design
+Scale
+Automate
+Secure
+Observe
+Recover
+Optimize
+```
+
+Core capabilities:
+
+* Linux systems engineering
+* Advanced networking
+* Security hardening
+* High availability
+* Disaster recovery
+* Fault tolerance
+* Kubernetes
+* Infrastructure as Code
+* Cloud architecture
 * Observability
-* Standardization
+* SRE practices
+* Platform Engineering
+* DevSecOps
+* Incident response
+* Performance engineering
+* Scalability
+* Reliability engineering
+* Internal developer platforms
 
-## Projects
+Senior-level scenarios include:
 
-Projects will progress from fundamental Linux administration to advanced DevOps and Platform Engineering scenarios.
+```text
+High Availability
+Disaster Recovery
+Zero-Downtime Deployment
+Infrastructure Provisioning
+Kubernetes Operations
+Observability
+Incident Management
+Capacity Planning
+Performance Optimization
+Security Hardening
+Automated Recovery
+Multi-Environment Infrastructure
+Platform Engineering
+```
 
-### Junior
+---
 
-* System Health Check
-* System Inventory
-* Disk Monitor
-* Memory Monitor
-* Process Monitor
-* Service Monitor
-* Network Check
-* DNS Check
-* HTTP Health Check
-* Log Analyzer
-* File Cleanup
-* Backup Manager
-* User Manager
-* Package Manager
-* Cron Manager
-* systemd Manager
-* SSH Manager
+# Linux Engineering Domains
 
-### Mid-Level
+## System Administration
 
-* Server Monitoring
-* API Monitor
-* Backup Service
-* Deployment Automation
-* Docker Manager
-* Configuration Manager
-* Cloud Resource Manager
-* Web Service Monitor
-* Infrastructure Automation
-* Monitoring Service
+```text
+Users
+Groups
+Permissions
+Processes
+Services
+systemd
+Packages
+Storage
+Filesystems
+Networking
+SSH
+Logs
+```
 
-### Senior
+## Networking
 
-* Linux Monitoring Platform
-* Infrastructure Automation Platform
-* Kubernetes Deployment Platform
-* Internal Developer Platform
-* Self-Service Infrastructure
-* Observability Platform
-* Automated Disaster Recovery
-* Multi-Environment Deployment Platform
-* Infrastructure Compliance Platform
-* DevOps Automation Platform
+```text
+TCP/IP
+IPv4
+IPv6
+DNS
+DHCP
+Routing
+NAT
+Ports
+Sockets
+Firewalls
+VPN
+Network Troubleshooting
+```
 
-## Technology Strategy
+## Security
 
-The laboratory intentionally separates programming responsibilities.
+```text
+Authentication
+Authorization
+SSH Hardening
+sudo
+File Permissions
+Firewall
+Secrets
+System Hardening
+Auditing
+Least Privilege
+```
 
-Python is primarily used for:
+## Storage
+
+```text
+Partitions
+Filesystems
+Mounts
+LVM
+RAID
+Disk Monitoring
+Backups
+Recovery
+Storage Performance
+```
+
+## Services
+
+```text
+systemd
+SSH
+Nginx
+Web Services
+Application Services
+Service Monitoring
+Service Recovery
+```
+
+---
+
+# DevOps Engineering
+
+The Linux foundation evolves into a complete DevOps workflow:
+
+```text
+Source Code
+     ↓
+Git
+     ↓
+GitHub
+     ↓
+CI
+     ↓
+Build
+     ↓
+Test
+     ↓
+Container
+     ↓
+Registry
+     ↓
+Deployment
+     ↓
+Kubernetes / Cloud
+     ↓
+Monitoring
+     ↓
+Logging
+     ↓
+Alerting
+     ↓
+Incident Response
+     ↓
+Recovery
+```
+
+---
+
+# Infrastructure as Code
+
+Infrastructure should progressively move from manual configuration to declarative infrastructure.
+
+Primary technologies:
+
+```text
+Terraform
+Ansible
+Kubernetes YAML
+Docker Compose
+Cloud CLI
+```
+
+Engineering objectives:
+
+* Reproducible infrastructure
+* Environment consistency
+* Automated provisioning
+* Configuration management
+* Version-controlled infrastructure
+* Change tracking
+* Safe deployments
+* Infrastructure testing
+
+---
+
+# Containers
+
+Container engineering includes:
+
+```text
+Docker Images
+Containers
+Volumes
+Networks
+Registries
+Docker Compose
+Container Security
+Resource Limits
+Health Checks
+Container Monitoring
+```
+
+The objective is to understand both container operation and production deployment patterns.
+
+---
+
+# Kubernetes
+
+Kubernetes training progresses from fundamentals to production operations.
+
+Core concepts:
+
+```text
+Pods
+Deployments
+ReplicaSets
+Services
+Namespaces
+ConfigMaps
+Secrets
+Volumes
+Ingress
+Jobs
+CronJobs
+Probes
+Resources
+Autoscaling
+Scheduling
+Networking
+RBAC
+```
+
+Advanced topics:
+
+```text
+High Availability
+Cluster Operations
+Security
+Observability
+Scaling
+Rolling Deployments
+Rollback
+Failure Recovery
+Resource Management
+```
+
+---
+
+# Observability
+
+Observability is treated as a core engineering capability.
+
+Three primary signals:
+
+```text
+Metrics
+Logs
+Traces
+```
+
+Technologies:
+
+```text
+Prometheus
+Grafana
+ELK
+Loki
+OpenTelemetry
+```
+
+Objectives:
+
+* Detect failures
+* Measure system health
+* Investigate incidents
+* Analyze performance
+* Create actionable alerts
+* Establish service-level objectives
+
+---
+
+# SRE
+
+Site Reliability Engineering practices are introduced at the senior level.
+
+Core concepts:
+
+```text
+SLI
+SLO
+SLA
+Error Budget
+Incident Response
+Reliability
+Availability
+Latency
+Capacity
+Monitoring
+Automation
+```
+
+Example objective:
+
+```text
+Service Availability SLO
+99.9%
+```
+
+The system should then provide the monitoring, alerting, architecture and recovery mechanisms necessary to operate against that objective.
+
+---
+
+# Platform Engineering
+
+Platform Engineering extends the laboratory toward internal infrastructure platforms.
+
+Focus areas:
+
+```text
+Developer Self-Service
+Infrastructure Provisioning
+Deployment Platforms
+Kubernetes Platforms
+Internal Tooling
+Golden Paths
+Standardization
+Observability
+Security
+Automation
+```
+
+Example platform:
+
+```text
+Developer
+    ↓
+Internal Platform
+    ↓
+Infrastructure API
+    ↓
+Terraform
+    ↓
+Cloud
+    ↓
+Kubernetes
+    ↓
+Application
+    ↓
+Observability
+```
+
+---
+
+# DevSecOps
+
+Security is integrated into the development and infrastructure lifecycle.
+
+```text
+Code
+ ↓
+Security Scan
+ ↓
+Build
+ ↓
+Container Scan
+ ↓
+Test
+ ↓
+Infrastructure Validation
+ ↓
+Deploy
+ ↓
+Runtime Monitoring
+```
+
+Topics include:
+
+* Secrets management
+* Dependency scanning
+* Container security
+* Image scanning
+* Infrastructure security
+* RBAC
+* Network security
+* Least privilege
+* Security automation
+
+---
+
+# Incident Response
+
+Senior exercises will simulate production incidents.
+
+Examples:
+
+```text
+Service Down
+Disk Full
+Memory Exhaustion
+CPU Saturation
+Network Failure
+DNS Failure
+Certificate Expiration
+Container Crash
+Kubernetes Pod Failure
+Database Unavailable
+Dependency Failure
+Deployment Failure
+```
+
+Each incident should follow a structured process:
+
+```text
+Detect
+ ↓
+Investigate
+ ↓
+Mitigate
+ ↓
+Recover
+ ↓
+Document
+ ↓
+Root Cause Analysis
+ ↓
+Prevent Recurrence
+```
+
+---
+
+# Performance Engineering
+
+Performance investigations may include:
+
+```text
+CPU
+Memory
+Disk I/O
+Network
+Processes
+Database
+Containers
+Kubernetes
+Application Latency
+```
+
+Tools may include:
+
+```text
+top
+htop
+vmstat
+iostat
+iotop
+ss
+netstat
+sar
+perf
+```
+
+The objective is to develop the ability to identify bottlenecks using measurable system data.
+
+---
+
+# Disaster Recovery
+
+The laboratory will progressively implement:
+
+```text
+Backup
+Restore
+Replication
+Recovery Procedures
+Recovery Testing
+RPO
+RTO
+Failure Simulation
+```
+
+Recovery must be tested rather than assumed.
+
+---
+
+# Automation Strategy
+
+Automation is divided according to the appropriate tool.
+
+### Bash
+
+Used primarily for:
+
+* Linux operations
+* Shell automation
+* Deployment scripts
+* System administration
+
+### Python
+
+Used primarily for:
 
 * Automation
-* Scripting
+* APIs
 * Infrastructure utilities
-* API integrations
+* Monitoring
+* Cloud automation
 * System administration tools
 
-C# / .NET is primarily used for:
+### C# / .NET
+
+Used primarily for:
 
 * Internal tools
 * APIs
-* Services
+* DevOps services
 * Platform Engineering tools
+* Infrastructure management services
 * Structured automation
-* DevOps applications
 
-Bash is primarily used for:
+### YAML
 
-* Linux administration
-* System automation
-* Server operations
-* Deployment scripts
-
-YAML is primarily used for:
+Used primarily for:
 
 * CI/CD
 * Kubernetes
 * Docker Compose
 * Ansible
-* Configuration
 
-Terraform is primarily used for:
+### Terraform
+
+Used primarily for:
 
 * Infrastructure as Code
 * Cloud infrastructure
-* Infrastructure provisioning
+* Provisioning
+* Infrastructure lifecycle management
 
-## Git Workflow
+---
 
-The repository uses Git for version control.
+# Engineering Project Standards
 
-Main branch:
-
-```text
-main
-```
-
-Recommended workflow:
+Each significant project should contain:
 
 ```text
-Create
-  ↓
-Test
-  ↓
-Commit
-  ↓
-Push
-  ↓
-GitHub
+README.md
+Architecture
+Requirements
+Implementation
+Configuration
+Tests
+Documentation
+Troubleshooting
+Operational Procedures
 ```
 
-## Engineering Principles
+Where appropriate:
 
-* Automation over manual operations
-* Infrastructure as Code
-* Reproducible environments
-* Version-controlled configuration
-* Security by default
-* Least privilege
-* Observability
-* Documentation
-* Idempotent automation
-* Failure recovery
-* Continuous improvement
+```text
+Dockerfile
+compose.yaml
+Makefile
+CI/CD configuration
+Terraform
+Ansible
+Kubernetes manifests
+Monitoring configuration
+```
 
-## Career Objective
+Projects should favor reproducibility over manual configuration.
 
-This laboratory is designed to develop practical skills applicable to positions such as:
+---
 
-* DevOps Engineer
-* Cloud DevOps Engineer
-* Platform Engineer
-* Site Reliability Engineer
-* Infrastructure Engineer
-* Cloud Engineer
-* DevSecOps Engineer
+# Project Progression
 
-The primary career target is DevOps Engineer, with Platform Engineering and SRE capabilities developed throughout the laboratory.
+The expected progression is:
 
-## Status
+```text
+Linux Fundamentals
+       ↓
+Linux Administration
+       ↓
+Bash Automation
+       ↓
+Networking
+       ↓
+Security
+       ↓
+Docker
+       ↓
+CI/CD
+       ↓
+Ansible
+       ↓
+Terraform
+       ↓
+Cloud
+       ↓
+Kubernetes
+       ↓
+Observability
+       ↓
+SRE
+       ↓
+Platform Engineering
+       ↓
+DevSecOps
+       ↓
+Production Architecture
+```
 
-This repository is continuously evolving as new Linux, DevOps, Cloud, Automation and Platform Engineering projects are implemented.
+---
 
+# Career Alignment
+
+This laboratory is designed around skills applicable to:
+
+```text
+DevOps Engineer
+Cloud DevOps Engineer
+Infrastructure Engineer
+Cloud Engineer
+Platform Engineer
+Site Reliability Engineer
+DevSecOps Engineer
+Systems Engineer
+```
+
+Primary career direction:
+
+**DevOps Engineer**
+
+Secondary specialization:
+
+**Platform Engineering**
+
+Supporting engineering disciplines:
+
+**SRE, Cloud Infrastructure, Linux Systems Engineering and DevSecOps**
+
+---
+
+# Engineering Maturity Model
+
+```text
+Level 1
+Understand the system
+
+Level 2
+Operate the system
+
+Level 3
+Automate the system
+
+Level 4
+Monitor the system
+
+Level 5
+Secure the system
+
+Level 6
+Scale the system
+
+Level 7
+Design reliable systems
+
+Level 8
+Build platforms that operate systems
+```
+
+The objective of this repository is to progress through all eight levels.
+
+---
+
+# Laboratory Rule
+
+Every technology introduced should eventually result in practical implementation.
+
+The preferred learning cycle is:
+
+```text
+Study
+ ↓
+Implement
+ ↓
+Break
+ ↓
+Troubleshoot
+ ↓
+Automate
+ ↓
+Monitor
+ ↓
+Document
+ ↓
+Improve
+```
+
+The ability to troubleshoot and recover from failure is considered as important as the ability to deploy a working system.
+
+---
+
+# Repository Status
+
+This repository is an active engineering laboratory.
+
+New exercises, automation, infrastructure, experiments and production-oriented projects will be added continuously.
+
+The final objective is to demonstrate practical engineering capability rather than simply completion of theoretical courses.
+
+---
+
+## License
+
+This repository is intended for educational, experimental and professional development purposes.
