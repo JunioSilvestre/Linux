@@ -1,0 +1,23 @@
+# =============================================================================
+# ARQUIVO: LICENSE
+# PROPÓSITO: Define os termos legais sob os quais este projeto pode ser usado,
+#            copiado, modificado e distribuído por terceiros.
+#
+# POR QUÊ É OBRIGATÓRIO:
+#   - Sem licença, o código é "todos os direitos reservados" por padrão
+#   - Projetos open-source sem licença não podem ser usados legalmente
+#   - Empresas não podem usar código sem licença clara
+#
+# LICENÇAS COMUNS:
+#   MIT         → permissiva, permite uso comercial, mínimas restrições
+#   Apache 2.0  → permissiva, inclui proteção de patentes
+#   GPL v3      → copyleft, derivados devem manter o mesmo código aberto
+#   BSD 2/3     → permissiva, semelhante à MIT
+#
+# COMO ESCOLHER:
+#   - Projeto pessoal/portfólio → MIT (mais simples)
+#   - Projeto corporativo        → Apache 2.0
+#   - Quer que derivados sejam open-source → GPL v3
+#
+# GERADOR: https://choosealicense.com
+# =============================================================================

@@ -1,0 +1,19 @@
+# =============================================================================
+# ARQUIVO: tests/fixtures/
+# PROPÓSITO: Diretório de fixtures — dados mock e arquivos de entrada estáticos
+#            usados pelos testes automatizados para simular condições reais.
+#
+# O QUE GUARDAR AQUI:
+#   - Arquivos de entrada simulada (ex: input.txt, sample.csv)
+#   - Respostas mockadas de APIs ou comandos externos
+#   - Arquivos de configuração de teste (não os de produção)
+#   - Qualquer dado estático necessário para reproduzir cenários de teste
+#
+# CONVENÇÃO DE NOMENCLATURA:
+#   fixtures/<nome-do-caso>/<arquivo>
+#   ex: fixtures/valid-input/data.txt
+#       fixtures/empty-file/input.txt
+#
+# NOTA: Este .gitkeep existe apenas para que o Git rastreie a pasta vazia.
+#       Remova-o quando o primeiro fixture real for adicionado.
+# =============================================================================

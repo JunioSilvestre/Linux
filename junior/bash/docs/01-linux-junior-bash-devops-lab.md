@@ -1,418 +1,222 @@
-# Laboratório Linux Junior — Bash, Automação e DevOps
+# 📘 Laboratório Linux Junior — Bash, Automação e DevOps
 
-## Objetivo deste documento
+> **Manual Prático e Guia Didático do Professor**  
+> Este documento é o manual mestre de aprendizado do laboratório `/home/Projetos/Linux/junior`. Aqui você aprenderá Linux e Bash da forma como os Engenheiros de Infraestrutura e DevOps trabalham no mercado: investigando o sistema, escrevendo automações seguras, testando cenários de falha, diagnosticando a causa raiz e integrando soluções em esteiras de CI/CD.
 
-Este documento define a primeira etapa prática do laboratório `/home/Projetos/Linux/junior`. O foco é aprender Linux e Bash fazendo: observar o sistema, executar operações com segurança, automatizar tarefas repetitivas, testar falhas, investigar resultados, documentar procedimentos e evoluir gradualmente para práticas de DevOps.
+---
 
-A regra principal será:
+## 👨‍🏫 Visão Geral da Metodologia Didática
+
+A regra de ouro de todo o treinamento é o **Ciclo de Engenharia**:
 
 > **Estudar → Implementar → Quebrar em ambiente controlado → Diagnosticar → Automatizar → Monitorar → Documentar → Melhorar.**
 
-A pasta `junior` não será apenas uma coleção de comandos. Cada tópico deve resultar em exercícios, scripts, evidências de execução, testes e documentação.
+Nesta pasta `junior`, você não irá apenas memorizar comandos isolados. Cada tópico técnico exige:
+1. Entendimento teórico da arquitetura do Linux.
+2. Implementação em script Bash limpo e legível.
+3. Testes em ambiente isolado (containers/VMCs).
+4. Registro de evidências de execução (`evidence/`).
+5. Documentação em Markdown do aprendizado obtido (`README.md`).
 
 ---
 
-## 1. Princípios de trabalho
+## 1. Princípios de Trabalho em Engenharia
 
-### 1.1 Segurança antes da velocidade
+### 1.1 Segurança antes da Velocidade
+Nunca execute ou teste comandos destrutivos diretamente em máquinas de produção. Para praticar com segurança, utilize máquinas virtuais de desenvolvimento, containers Docker descartáveis e privilégios limitados.
 
-Nunca teste comandos destrutivos diretamente em um servidor de produção. Para aprender, use uma máquina virtual, container, usuário de laboratório e diretórios de teste.
+Comandos de alto risco como `rm -rf`, `mkfs`, `dd`, `fdisk`, `parted`, `chmod -R`, `chown -R`, alterações em `/etc` ou alterações de firewall podem causar indisponibilidade imediata ou perda irrecuperável de dados.
 
-Comandos como `rm -rf`, `mkfs`, `dd`, `fdisk`, `parted`, `chmod -R`, `chown -R`, alterações em `/etc`, reinício de serviços e regras de firewall podem causar perda de dados ou indisponibilidade.
-
-Antes de uma mudança importante:
+**Checklist pré-execução (Execute antes de rodar qualquer comando privilegiado):**
 
 ```bash
-pwd
-whoami
-hostname
-id
-sudo -l
+pwd        # Em qual pasta eu estou exatamente?
+whoami     # Qual é o meu usuário atual?
+hostname   # Em qual servidor eu estou conectado?
+id         # Quais são meus privilégios de grupo?
+sudo -l    # O que posso executar com sudo sem senha?
 ```
 
-Confirme onde está, qual usuário está usando, em qual host está conectado e quais privilégios possui.
+---
 
 ### 1.2 Idempotência
 
-Um script idempotente pode ser executado várias vezes e produz o mesmo estado final sem duplicar arquivos, usuários, serviços ou configurações.
+> **Nota do Professor:** Um script é considerado **idempotente** quando pode ser executado 1, 10 ou 100 vezes seguidas no mesmo servidor, e o estado final do sistema permanece exatamente o mesmo, sem criar duplicidades ou erros.
 
-Exemplo não idempotente:
-
+#### ❌ Exemplo NÃO Idempotente (Ruim):
 ```bash
+# Se rodar 5 vezes, adicionará 5 linhas idênticas ao arquivo!
 echo "export APP_ENV=dev" >> ~/.bashrc
 ```
 
-Cada execução adiciona outra linha. Uma alternativa mais segura:
-
+#### ✅ Exemplo Idempotente (Profissional):
 ```bash
+# Verifica se a linha já existe antes de adicionar
 grep -qxF 'export APP_ENV=dev' ~/.bashrc || echo 'export APP_ENV=dev' >> ~/.bashrc
 ```
 
+---
+
 ### 1.3 Reprodutibilidade
-
-Tudo que for necessário para repetir o exercício deve estar no repositório: script, configuração, dados de exemplo, instruções, teste e resultado esperado.
-
-### 1.4 Princípio do menor privilégio
-
-Execute como usuário normal sempre que possível. Use `sudo` somente para a operação que realmente precisa de privilégio. Não coloque senhas ou tokens dentro de scripts versionados.
-
-### 1.5 Observabilidade desde o início
-
-Todo script operacional deve informar o que está fazendo, retornar códigos de saída úteis e registrar erros de forma compreensível.
+Tudo o que for necessário para reproduzir um exercício ou automação deve estar versionado no repositório: o script principal, arquivos de configuração de exemplo, dados de teste (`fixtures`), scripts de teste automatizado e instruções claras.
 
 ---
 
-## 2. Estrutura existente e organização recomendada
+### 1.4 Princípio do Menor Privilégio
+Execute scripts com um usuário comum sem privilégios sempre que possível. Utilize o `sudo` pontualmente apenas para o comando específico que exige acesso root. NUNCA grave senhas, tokens de API ou chaves privadas dentro de scripts versionados.
 
-A estrutura inicial informada é:
+---
+
+### 1.5 Observabilidade desde o Início
+Todo script operacional deve informar claramente o que está realizando através de logs estruturados (com marcação de data/hora), retornar códigos de saída (`exit codes`) corretos e direcionar mensagens de erro para a saída de erro padrão (`stderr`).
+
+---
+
+## 2. Estrutura de Diretórios Recomendada
+
+A organização modular do repositório `/home/Projetos/Linux/junior` é mantida por tópicos de conhecimento:
 
 ```text
 junior/
-├── bash/
-├── cron/
-├── dns/
-├── filesystem/
-├── logs/
-├── networking/
-├── packages/
-├── processes/
-├── services/
-├── ssh/
-├── storage/
-├── systemd/
-├── troubleshooting/
-├── users-permissions/
-└── web-server/
+├── bash/                    → Fundamentos, sintaxe, controle de erro e bibliotecas
+├── cron/                    → Tarefas agendadas e gerenciamento de locks
+├── dns/                     → Resolução de nomes, dig, nslookup, bind
+├── filesystem/              → Estrutura de arquivos, permissões, symlinks
+├── logs/                    → Logrotate, journalctl, parsing com grep/awk/sed
+├── networking/              → Endereçamento IP, rotas, ss, curl, firewalls
+├── packages/                → Gestão de pacotes apt, repositórios, dpkg
+├── processes/               → Gerenciamento de PIDs, sinais, recursos
+├── services/                → Systemctl, recuperação de serviços
+├── ssh/                     → Autenticação por chave, hardening, scp, rsync
+├── storage/                 → Discos, mounts, LVM, backups e restauração
+├── systemd/                 → Units customizadas, timers e logs
+├── troubleshooting/         → Incidentes, evidencias e runbooks
+├── users-permissions/       → Usuários, grupos, sudoers e ACLs
+└── web-server/              → Nginx, health checks e reverse proxy
 ```
 
-A recomendação é manter essas áreas e adicionar uma convenção interna a cada uma:
+### Convenção Interna de Subpastas por Exercício
+Dentro de cada tópico ou projeto prático, adote a seguinte divisão:
 
 ```text
-<topico>/
-├── README.md              # teoria, objetivo e como executar
-├── scripts/               # scripts executáveis
-├── configs/               # arquivos de configuração de exemplo
-├── fixtures/              # dados controlados para teste
-├── tests/                 # testes automatizados ou checklists
-├── evidence/              # saídas e evidências, quando necessário
-└── notes/                 # troubleshooting e aprendizados
-```
-
-Não é obrigatório criar todas as subpastas em todos os tópicos no primeiro dia. Crie-as conforme o exercício crescer.
-
----
-
-## 3. Lista de pastas de exercícios a criar
-
-Execute a partir da raiz do laboratório. O comando abaixo cria áreas para exercícios, scripts, testes e projetos integradores sem apagar nada existente:
-
-```bash
-cd /home/Projetos/Linux/junior
-
-mkdir -p \
-  bash/{fundamentos,variaveis,entrada-saida,condicionais,loops,funcoes,arrays,strings,arquivos,processamento-texto,erros,debug,portabilidade,boas-praticas,tests,lib,bin} \
-  filesystem/{navegacao,arquivos-diretorios,links,permissoes,arquivos-temporarios,limpeza,fixtures,tests} \
-  users-permissions/{usuarios,grupos,sudo,permissoes-acl,ssh-keys,tests} \
-  processes/{ps-top,signals,job-control,prioridades,resource-limits,tests} \
-  services/{systemctl,health-checks,service-recovery,tests} \
-  systemd/{units,timers,logs,service-examples,tests} \
-  packages/{apt,repositories,cache,package-inventory,tests} \
-  networking/{ip-route,ports,sockets,curl,wget,firewall,tests} \
-  ssh/{client,hardening,automation,known-hosts,tests} \
-  storage/{disk-usage,mounts,filesystems,lvm,backups,restore,tests} \
-  logs/{journalctl,grep-awk-sed,rotation,parsing,alerts,fixtures,tests} \
-  cron/{jobs,environment,locking,logging,tests} \
-  dns/{dig,host,nslookup,resolution,tests} \
-  web-server/{nginx,health-check,static-site,reverse-proxy,tests} \
-  troubleshooting/{runbooks,incidents,diagnostics,postmortems,evidence} \
-  automation/{inventory,backup,health-check,reporting,deployment,cleanup,tests} \
-  devops/{git,ci,artifacts,containers,compose,security,observability} \
-  projects/{system-inventory,backup-manager,service-monitor,log-analyzer,web-health-monitor}
-```
-
-### 3.1 Descrição das pastas principais
-
-| Pasta | O que praticar |
-|---|---|
-| `bash/fundamentos` | shebang, execução, comandos, variáveis e códigos de saída |
-| `bash/processamento-texto` | `grep`, `cut`, `sort`, `uniq`, `tr`, `sed`, `awk`, `xargs` |
-| `bash/erros` | `set -Eeuo pipefail`, traps, validação e tratamento de erro |
-| `filesystem` | caminhos, arquivos, links, permissões, temporários e limpeza |
-| `users-permissions` | usuários, grupos, `sudo`, ownership e acesso mínimo |
-| `processes` | processos, sinais, jobs, prioridades e consumo de recursos |
-| `services` / `systemd` | status, logs, reinício, units e timers |
-| `networking` / `dns` | IP, rotas, portas, HTTP, DNS e diagnóstico |
-| `storage` | espaço, inodes, mounts, backup e restauração |
-| `logs` | journald, filtros, parsing, rotação e alertas |
-| `cron` | tarefas agendadas, ambiente, locking e logs |
-| `web-server` | Nginx, health checks e reverse proxy |
-| `automation` | scripts operacionais reutilizáveis |
-| `devops` | Git, CI, artefatos, containers, segurança e observabilidade |
-| `projects` | projetos integradores com documentação e testes |
-| `troubleshooting` | runbooks, incidentes, evidências e postmortems |
-
-Para confirmar a estrutura:
-
-```bash
-tree -d -L 3 /home/Projetos/Linux/junior
-```
-
-Caso `tree` não esteja instalado:
-
-```bash
-find /home/Projetos/Linux/junior -type d | sort
+<exercicio-ou-projeto>/
+├── README.md              # Teoria, objetivo, pré-requisitos e instruções de uso
+├── scripts/               # Scripts executáveis (.sh ou executável sem extensão)
+├── configs/               # Arquivos de configuração modelo (.env.example, .conf)
+├── fixtures/              # Dados estáticos para testes e mocks
+├── tests/                 # Scripts de teste automatizado (BATS ou Bash)
+├── evidence/              # Logs e provas de execução do exercício
+└── notes/                 # Anotações de troubleshooting e postmortems
 ```
 
 ---
 
-## 4. Convenção para cada exercício
+## 3. Guia Didático de Bash Essencial
 
-Cada exercício deve conter, no mínimo:
+### 3.1 Shebang e Permissão de Execução
 
-```text
-exercicio-01/
-├── README.md
-├── scripts/
-│   └── exercicio.sh
-├── fixtures/
-├── tests/
-│   └── test.sh
-└── evidence/
-```
-
-O `README.md` deve explicar:
-
-1. Qual problema o exercício resolve.
-2. Pré-requisitos.
-3. Como executar.
-4. Entradas esperadas.
-5. Saídas esperadas.
-6. Possíveis falhas.
-7. Como desfazer ou limpar.
-8. O que foi aprendido.
-
-Modelo inicial:
-
-```markdown
-# Exercício: nome
-
-## Objetivo
-
-## Pré-requisitos
-
-## Execução
-
-```bash
-bash scripts/exercicio.sh
-```
-
-## Resultado esperado
-
-## Cenários de erro
-
-## Limpeza
-
-## Aprendizados
-```
-
----
-
-## 5. Bash essencial
-
-### 5.1 Shebang e execução
-
-Um script Bash deve declarar seu interpretador:
+Todo script Bash deve iniciar com a declaração do interpretador:
 
 ```bash
 #!/usr/bin/env bash
 
-printf 'Olá, Linux!\n'
+printf 'Olá, Linux DevOps!\n'
 ```
 
-Salve como `hello.sh`, dê permissão e execute:
-
+#### Como Executar Corretamente:
 ```bash
+# 1. Tornar o arquivo executável:
 chmod +x hello.sh
+
+# 2. Executar via caminho relativo ou absoluto:
 ./hello.sh
-```
 
-Também é possível executar explicitamente pelo Bash:
-
-```bash
+# 3. Ou invocar explicitamente pelo Bash (não exige chmod +x):
 bash hello.sh
 ```
 
-Diferença importante: `./hello.sh` depende da permissão de execução e do shebang; `bash hello.sh` chama o Bash diretamente.
+> **Diferença importante:** `./hello.sh` utiliza o interpretador definido no Shebang (`#!/usr/bin/env bash`). Invocá-lo com `sh hello.sh` usará o interpretador posix padronizado `/bin/sh` (que não suporta muitos recursos avançados do Bash como `[[ ]]` ou arrays).
 
-### 5.2 Variáveis e aspas
+---
+
+### 3.2 Variáveis, Escopo e Aspas
 
 ```bash
-nome="laboratorio"
-ambiente="dev"
+readonly SCRIPT_NAME="inventory"  # Constante (não pode ser alterada)
+export APP_ENV="dev"             # Exportada para processos filhos
 
+nome="laboratorio"
 printf 'Projeto: %s\n' "$nome"
-printf 'Ambiente: %s\n' "$ambiente"
 ```
 
-Use aspas em expansões de variáveis:
+#### 🚨 Por que usar ASPAS DUPLAS sempre?
 
 ```bash
-arquivo="meu arquivo.txt"
+arquivo="meu arquivo com espacos.txt"
+
+# ❌ ERRADO: O Bash entenderá como 4 arquivos separados!
+cat $arquivo
+
+# ✅ CORRETO: O Bash preserva o nome como uma única string!
 cat "$arquivo"
 ```
 
-Sem aspas, espaços e caracteres especiais podem quebrar o comando.
+---
 
-Convenções úteis:
+### 3.3 Redirecionamentos de Entrada e Saída
 
-```bash
-readonly SCRIPT_NAME="inventory"
-readonly VERSION="1.0.0"
-
-export APP_ENV="dev"
+```text
+  >    Sobrescreve o arquivo com a saída padrão (stdout - 1)
+  >>   Adiciona ao final do arquivo (append - stdout - 1)
+  2>   Redireciona a saída de erros (stderr - 2)
+  &>   Redireciona stdout e stderr juntos para o mesmo local
+  <    Lê o conteúdo de um arquivo para o comando (stdin - 0)
 ```
 
-Use `readonly` para valores que não devem mudar. Use `export` somente quando um processo filho precisa receber a variável.
-
-### 5.3 Entrada, saída e redirecionamento
-
 ```bash
-read -r -p 'Informe o ambiente: ' ambiente
-printf 'Ambiente selecionado: %s\n' "$ambiente"
-```
+# Exemplo de busca limpa ignorando erros de permissão negada:
+find /var/log -name "*.log" 2>/dev/null
 
-Redirecionamentos:
-
-```bash
-comando > saida.txt       # substitui stdout
-comando >> saida.txt      # adiciona stdout
-comando 2> erro.txt       # salva stderr
-comando > saida.txt 2>&1  # salva stdout e stderr
-comando &> tudo.txt       # Bash: salva os dois
-```
-
-Pipe:
-
-```bash
+# Filtrar processos do Nginx sem exibir o próprio grep no resultado:
 ps aux | grep '[n]ginx'
 ```
 
-O padrão `'[n]ginx'` evita que o próprio `grep nginx` apareça no resultado.
+---
 
-### 5.4 Códigos de saída
+### 3.4 Códigos de Saída (`Exit Status`)
 
-Por convenção, `0` significa sucesso; qualquer valor diferente de zero indica falha.
-
-```bash
-true
-echo "$?"
-
-false
-echo "$?"
-```
-
-Exemplo de validação:
+Por convenção universal nos sistemas Unix:
+* **`0`**: Sucesso total.
+* **`1 a 255`**: Erro ou falha na execução.
 
 ```bash
 if [[ -f /etc/hosts ]]; then
-  printf 'Arquivo encontrado.\n'
+  printf '[OK] Arquivo de hosts encontrado.\n'
+  exit 0
 else
-  printf 'Arquivo ausente.\n' >&2
+  printf '[ERRO] Arquivo /etc/hosts ausente!\n' >&2
   exit 1
 fi
 ```
 
-### 5.5 Condicionais
-
-```bash
-if [[ "${1:-}" == "prod" ]]; then
-  printf 'Atenção: ambiente de produção.\n'
-elif [[ "${1:-}" == "dev" ]]; then
-  printf 'Ambiente de desenvolvimento.\n'
-else
-  printf 'Uso: %s {dev|prod}\n' "$0" >&2
-  exit 2
-fi
-```
-
-Testes frequentes:
-
-```bash
-[[ -f arquivo ]]   # arquivo regular
-[[ -d pasta ]]     # diretório
-[[ -r arquivo ]]   # legível
-[[ -w arquivo ]]   # gravável
-[[ -x arquivo ]]   # executável
-[[ -n "$valor" ]] # string não vazia
-[[ "$a" == "$b" ]]
-```
-
-### 5.6 Loops
-
-Percorrer arquivos com segurança:
-
-```bash
-while IFS= read -r arquivo; do
-  printf 'Processando: %s\n' "$arquivo"
-done < <(find . -maxdepth 1 -type f -print)
-```
-
-Percorrer argumentos:
-
-```bash
-for argumento in "$@"; do
-  printf 'Argumento: %s\n' "$argumento"
-done
-```
-
-Evite `for arquivo in $(find ...)`, porque quebra nomes contendo espaços, tabs ou novas linhas.
-
-### 5.7 Funções
-
-```bash
-log_info() {
-  printf '[INFO] %s\n' "$*"
-}
-
-log_error() {
-  printf '[ERROR] %s\n' "$*" >&2
-}
-
-require_command() {
-  command -v "$1" >/dev/null 2>&1 || {
-    log_error "Comando obrigatório não encontrado: $1"
-    return 1
-  }
-}
-```
-
-Funções devem ter responsabilidade clara e retornar sucesso ou falha de forma previsível.
-
-### 5.8 Arrays
-
-```bash
-servicos=(ssh cron systemd-timesyncd)
-
-for servico in "${servicos[@]}"; do
-  printf 'Serviço: %s\n' "$servico"
-done
-```
-
-Sempre use `"${array[@]}"` para preservar cada elemento como uma unidade.
-
 ---
 
-## 6. Modelo de script operacional seguro
+### 3.5 Modelo de Script Operacional Seguro (Template de Produção)
 
-Use este esqueleto como ponto de partida:
+Utilize este modelo como esqueleto base para todos os seus scripts de produção:
 
 ```bash
 #!/usr/bin/env bash
+# =============================================================================
+# ARQUIVO: template-seguro.sh
+# DESCRIÇÃO: Template robusto com controle de erro, logs e traps
+# =============================================================================
 set -Eeuo pipefail
 
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
+# Função de Log Estruturado
 log() {
   local level="$1"
   shift
@@ -424,356 +228,106 @@ die() {
   exit 1
 }
 
+# Limpeza automática ao encerrar (Garanta que não fiquem temporários soltos)
 cleanup() {
   local status=$?
-  # Remova arquivos temporários aqui, se existirem.
+  # Remova arquivos temporários aqui
   exit "$status"
 }
 trap cleanup EXIT
-trap 'die "Falha na linha $LINENO: $BASH_COMMAND"' ERR
+trap 'die "Falha crítica na linha $LINENO executando: $BASH_COMMAND"' ERR
 
 usage() {
-  printf 'Uso: %s [opções]\n' "$SCRIPT_NAME"
-  printf '  -h, --help    mostra esta ajuda\n'
+  cat <<EOF
+Uso: $SCRIPT_NAME [opções]
+
+Opções:
+  -h, --help    Exibe esta ajuda.
+EOF
 }
 
 main() {
-  log INFO "Iniciando $SCRIPT_NAME"
-  usage
-  log INFO "Finalizado com sucesso"
+  log INFO "Iniciando $SCRIPT_NAME..."
+  
+  if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+    usage
+    exit 0
+  fi
+
+  log INFO "Processamento finalizado com sucesso."
 }
 
 main "$@"
 ```
 
-### 6.1 Quando usar `set -Eeuo pipefail`
-
-- `-e`: interrompe quando um comando falha, salvo em contextos condicionais específicos.
-- `-u`: trata variáveis não definidas como erro.
-- `-o pipefail`: faz um pipeline falhar se qualquer etapa falhar.
-- `-E`: preserva o comportamento de `trap ERR` em funções e subshells.
-
-Teste a sintaxe antes de executar:
-
-```bash
-bash -n script.sh
-```
-
-Analise problemas de estilo:
-
-```bash
-shellcheck script.sh
-```
-
-Formate de maneira consistente, se `shfmt` estiver disponível:
-
-```bash
-shfmt -w script.sh
-```
-
 ---
 
-## 7. Comandos Linux que serão praticados
+## 4. Principais Ferramentas Linux que Você Vai Dominar
 
-### 7.1 Navegação e arquivos
-
-```bash
-pwd                         # diretório atual
-ls -lah                     # lista detalhada, incluindo ocultos
-cd /var/log                 # muda de diretório
-find . -type f -name '*.log' # encontra arquivos
-stat arquivo.txt            # metadados
-file arquivo.txt            # identifica tipo
-realpath arquivo.txt        # mostra caminho absoluto
+```
+ ┌────────────────────────────────────────────────────────────────────────┐
+ │ FERRAMENTAS CLAVE DO ENGENHEIRO LINUX & DEVOPS                        │
+ │                                                                        │
+ │  • Navegação & Arquivos: pwd, ls, cd, find, stat, file, realpath       │
+ │  • Texto & Dados:        grep, cut, sort, uniq, awk, sed, tr, jq       │
+ │  • Permissões & Usuários: whoami, id, chmod, chown, umask, getfacl     │
+ │  • Processos & Recursos: ps, top, pgrep, kill, free, uptime, vmstat    │
+ │  • Serviços & Logs:      systemctl, journalctl, logrotate, dmesg       │
+ │  • Redes & HTTP:         ip, ss, ping, dig, curl, wget, nc, ufw        │
+ │  • Storage & Backup:     df, du, lsblk, mount, tar, sha256sum, rsync   │
+ └────────────────────────────────────────────────────────────────────────┘
 ```
 
-Criação e cópia:
+### Exemplos Práticos Rápidos
 
 ```bash
-mkdir -p fixtures/input
-printf 'linha 1\n' > fixtures/input/exemplo.txt
-cp fixtures/input/exemplo.txt fixtures/
-mv fixtures/exemplo.txt fixtures/input/renomeado.txt
-```
+# 1. Buscar a palavra "error" nos logs ignorando maiúsculas:
+grep -Rni --include='*.log' 'error' /var/log/
 
-Links:
-
-```bash
-ln -s "$(realpath fixtures/input/renomeado.txt)" fixtures/atalho.txt
-readlink -f fixtures/atalho.txt
-```
-
-### 7.2 Texto e dados
-
-```bash
-grep -Rni --include='*.log' 'error' logs/
+# 2. Extrair apenas o nome dos usuários do arquivo /etc/passwd:
 cut -d: -f1 /etc/passwd
-sort arquivo.txt | uniq -c | sort -nr
-awk '{print $1, $NF}' arquivo.txt
-sed -n '1,20p' arquivo.txt
-tr '[:lower:]' '[:upper:]' < arquivo.txt
-```
 
-Para dados delimitados, prefira `awk` ou Python quando o formato for complexo. Antes de alterar muitos arquivos, teste a expressão sem `-i` no `sed`.
+# 3. Contar IPs únicos que mais fizeram requisições em um log:
+awk '{print $1}' access.log | sort | uniq -c | sort -nr | head -n 10
 
-### 7.3 Usuários e permissões
+# 4. Verificar se a porta 8080 está aberta no servidor:
+ss -tulpn | grep 8080
 
-```bash
-whoami
-id
-getent passwd
-getent group
-ls -l arquivo
-chmod 640 arquivo
-chown usuario:grupo arquivo
-```
-
-Interpretação de `-rwxr-x---`:
-
-```text
--       tipo: arquivo regular
-rwx     proprietário: leitura, escrita, execução
-r-x     grupo: leitura e execução
----     outros: nenhum acesso
-```
-
-Use notação simbólica quando ela comunicar melhor a intenção:
-
-```bash
-chmod u=rw,g=r,o= arquivo
-chmod u+x script.sh
-```
-
-### 7.4 Processos
-
-```bash
-ps aux --sort=-%cpu | head
-pgrep -a nginx
-pstree -p
-free -h
-uptime
-```
-
-Sinais:
-
-```bash
-kill -TERM PID   # solicita encerramento limpo
-kill -KILL PID   # força encerramento; último recurso
-```
-
-Nunca use `kill -9` como primeira tentativa. Investigue o processo e tente `TERM` antes.
-
-### 7.5 Serviços e systemd
-
-```bash
-systemctl status ssh
-systemctl is-active ssh
-systemctl is-enabled ssh
-sudo systemctl restart ssh
-journalctl -u ssh --since '1 hour ago'
-```
-
-Antes de reiniciar um serviço, observe o status e os logs. Após a alteração, valide novamente.
-
-### 7.6 Pacotes
-
-Em Ubuntu/Debian:
-
-```bash
-apt-cache policy curl
-sudo apt update
-apt list --upgradable
-sudo apt install curl
-sudo apt remove pacote-exemplo
-```
-
-Não rode `apt upgrade` automaticamente em um script de produção sem política explícita, janela de mudança, logs e estratégia de rollback.
-
-### 7.7 Rede e HTTP
-
-```bash
-ip addr
-ip route
-ss -tulpn
-ping -c 3 1.1.1.1
-getent hosts example.com
-curl -I --max-time 10 https://example.com
-curl -fsS --max-time 10 https://example.com >/dev/null
-```
-
-Diferença prática: `curl -I` inspeciona cabeçalhos; `curl -fsS` é adequado para health checks porque falha em HTTP 4xx/5xx e mostra erro sem ruído desnecessário.
-
-### 7.8 Disco e armazenamento
-
-```bash
-df -h
-df -ih
-du -xhd1 /var 2>/dev/null | sort -h
-lsblk -f
-findmnt
-```
-
-Observe tanto espaço em bytes quanto inodes. Um sistema pode ter espaço livre e ainda falhar por falta de inodes.
-
-### 7.9 Logs
-
-```bash
-journalctl -b
-journalctl -p warning..alert
-journalctl -u nginx --since today
-journalctl -f
-```
-
-Leia logs com contexto: horário, host, serviço, usuário, correlação com uma mudança e impacto observado.
-
----
-
-## 8. Projetos Bash obrigatórios
-
-### Projeto 1 — `system-inventory`
-
-Objetivo: gerar relatório de host contendo hostname, kernel, uptime, CPU, memória, discos, interfaces, usuários e serviços ativos.
-
-Saída sugerida:
-
-```text
-reports/hostname-2026-09-07T153000Z.txt
-```
-
-Requisitos:
-
-- Não depender de saída visual difícil de processar.
-- Retornar erro se algum comando obrigatório estiver ausente.
-- Permitir `--output arquivo`.
-- Não expor segredos.
-
-### Projeto 2 — `health-check`
-
-Objetivo: verificar disco, memória, carga, DNS, conectividade HTTP e serviços.
-
-Códigos de saída sugeridos:
-
-```text
-0 = saudável
-1 = alerta
-2 = erro de configuração
-```
-
-Exemplo de verificação HTTP:
-
-```bash
-if curl -fsS --max-time 5 https://example.com >/dev/null; then
-  printf '[OK] HTTP disponível\n'
-else
-  printf '[CRITICAL] HTTP indisponível\n' >&2
-  exit 1
-fi
-```
-
-### Projeto 3 — `backup-manager`
-
-Objetivo: compactar diretórios selecionados, gerar checksum, manter retenção e validar restauração.
-
-Ferramentas:
-
-```bash
-tar -czf backup.tar.gz diretorio/
-sha256sum backup.tar.gz > backup.tar.gz.sha256
-sha256sum -c backup.tar.gz.sha256
-tar -tzf backup.tar.gz
-```
-
-Nunca considere um backup válido sem testar a restauração:
-
-```bash
-mkdir -p restore-test
-tar -xzf backup.tar.gz -C restore-test
-```
-
-### Projeto 4 — `log-analyzer`
-
-Objetivo: contar erros por serviço, extrair períodos críticos e gerar resumo.
-
-Requisitos:
-
-- Aceitar arquivo como argumento.
-- Não modificar o log original.
-- Diferenciar ausência de arquivo de ausência de ocorrências.
-- Gerar saída legível e, opcionalmente, CSV.
-
-### Projeto 5 — `service-monitor`
-
-Objetivo: verificar serviços, reiniciar somente quando autorizado e registrar todas as decisões.
-
-Requisitos:
-
-- Modo somente leitura por padrão.
-- `--repair` habilita tentativa de recuperação.
-- Limite de tentativas para não criar loop de reinício.
-- Validação posterior com `systemctl is-active`.
-
-### Projeto 6 — `web-health-monitor`
-
-Objetivo: monitorar endpoints HTTP com timeout, código esperado e tempo de resposta.
-
-Exemplo:
-
-```bash
-curl -fsS -o /dev/null \
-  -w 'status=%{http_code} time=%{time_total}\n' \
-  --connect-timeout 3 --max-time 10 \
-  https://example.com
+# 5. Medir o tempo de resposta HTTP com curl:
+curl -fsS -o /dev/null -w "Status: %{http_code} - Tempo Total: %{time_total}s\n" https://example.com
 ```
 
 ---
 
-## 9. Automação com cron e systemd timer
+## 5. Automação com Cron vs Systemd Timers
 
-### 9.1 Cron
+| Característica | Cron | Systemd Timer |
+|---|---|---|
+| **Facilidade de configuração** | Alta (`crontab -e`) | Média (exige `.service` e `.timer`) |
+| **Ambiente de execução** | Reduzido (PATH limitado) | Completo e configurável no `.service` |
+| **Gerenciamento de Logs** | Exige redirecionar para arquivo | Integrado nativamente no `journalctl` |
+| **Controle de Dependências** | Não possui | Nativo (ex: aguardar rede ativa) |
+| **Proteção de Execução Simultânea** | Requer `flock` externo | Nativo |
 
-Formato:
+### Exemplo de Timer no Systemd
 
-```text
-MINUTO HORA DIA_DO_MÊS MÊS DIA_DA_SEMANA COMANDO
-```
-
-Exemplo a cada cinco minutos:
-
-```cron
-*/5 * * * * /home/usuario/lab/automation/health-check.sh >> /home/usuario/lab/logs/cron.log 2>&1
-```
-
-O cron possui ambiente reduzido. Use caminhos absolutos, defina `PATH` quando necessário e registre stdout/stderr.
-
-Proteja contra execução sobreposta com `flock`:
-
-```cron
-*/5 * * * * flock -n /tmp/health-check.lock /home/usuario/lab/health-check.sh
-```
-
-### 9.2 systemd timer
-
-O systemd oferece logs integrados, dependências e melhor controle operacional.
-
-Exemplo de unit:
-
+#### 1. Arquivo de Serviço (`/etc/systemd/system/health-check.service`):
 ```ini
 [Unit]
-Description=Laboratório - verificação de saúde
+Description=Laboratório - Verificação de Saúde do Servidor
 
 [Service]
 Type=oneshot
-ExecStart=/home/usuario/lab/automation/health-check.sh
+ExecStart=/home/Projetos/Linux/junior/bash/projects/junior-08-automation/health-check/scripts/health-check.sh
 ```
 
-Exemplo de timer:
-
+#### 2. Arquivo de Timer (`/etc/systemd/system/health-check.timer`):
 ```ini
 [Unit]
-Description=Executa health check periodicamente
+Description=Executa o Health Check a cada 5 minutos
 
 [Timer]
-OnBootSec=2min
+OnBootSec=1min
 OnUnitActiveSec=5min
 Persistent=true
 
@@ -781,393 +335,34 @@ Persistent=true
 WantedBy=timers.target
 ```
 
-Validação:
-
 ```bash
-systemd-analyze verify health-check.service health-check.timer
-systemctl --user daemon-reload
-systemctl --user enable --now health-check.timer
-systemctl --user list-timers
-journalctl --user -u health-check.service
-```
-
-Use `systemd` em vez de cron quando precisar de dependências, status operacional, logs via journald e controle mais explícito.
-
----
-
-## 10. Testes de scripts
-
-### 10.1 Teste manual mínimo
-
-Para cada script, teste:
-
-```text
-1. execução normal
-2. argumento ausente
-3. arquivo inexistente
-4. permissão insuficiente
-5. comando dependente ausente
-6. entrada vazia
-7. entrada com espaços
-8. execução repetida
-9. interrupção durante execução
-10. falha de rede ou serviço
-```
-
-### 10.2 Testes Bash simples
-
-```bash
-#!/usr/bin/env bash
-set -Eeuo pipefail
-
-script="../scripts/system-inventory.sh"
-
-[[ -x "$script" ]] || { echo 'script não executável' >&2; exit 1; }
-
-if "$script" --help >/dev/null 2>&1; then
-  echo '[PASS] --help'
-else
-  echo '[FAIL] --help' >&2
-  exit 1
-fi
-```
-
-Para projetos maiores, use Bats quando disponível:
-
-```bash
-bats tests/
-```
-
-### 10.3 Lint e sintaxe
-
-```bash
-bash -n script.sh
-shellcheck script.sh
-```
-
-O lint não substitui teste funcional, mas encontra variáveis sem aspas, expansões frágeis, testes incorretos e vários erros comuns.
-
----
-
-## 11. Git e fluxo de DevOps
-
-Inicialize ou verifique o repositório:
-
-```bash
-git status
-git branch --show-current
-git log --oneline --decorate -5
-```
-
-Fluxo recomendado:
-
-```bash
-git checkout -b feat/system-inventory
-git add bash/automation projects/system-inventory
-git diff --cached
-git commit -m 'feat: add system inventory exercise'
-git status
-```
-
-Boas práticas:
-
-- Commits pequenos e descritivos.
-- Nunca versionar senhas, tokens, chaves privadas ou dumps sensíveis.
-- Adicionar `.gitignore` para relatórios locais, caches e evidências grandes.
-- Revisar `git diff --cached` antes do commit.
-- Documentar mudanças que afetam execução ou permissões.
-
-Exemplo de `.gitignore`:
-
-```gitignore
-*.log
-*.tmp
-.env
-.env.*
-!.env.example
-reports/generated/
-evidence/local/
-__pycache__/
+# Ativar e testar o timer:
+sudo systemctl daemon-reload
+sudo systemctl enable --now health-check.timer
+systemctl list-timers
 ```
 
 ---
 
-## 12. Evolução para CI/CD
+## 6. Qualidade, Testes e Integração Contínua (CI/CD)
 
-Depois que os scripts estiverem funcionando localmente, automatize a validação:
-
-```text
-commit
-  ↓
-lint Bash com ShellCheck
-  ↓
-verificação bash -n
-  ↓
-testes funcionais
-  ↓
-criação de artefato
-  ↓
-publicação ou implantação controlada
-  ↓
-health check
-```
-
-Pipeline mínimo deve executar:
+Antes de considerar qualquer script pronto:
+1. **Validação de Sintaxe:** `bash -n script.sh`
+2. **Análise Estática de Qualidade:** `shellcheck script.sh`
+3. **Testes Automatizados:** Escreva testes usando `BATS` em `tests/*.bats`.
 
 ```bash
-find . -type f -name '*.sh' -print0 | xargs -0 -r -n1 bash -n
+# Exemplo de comando do pipeline CI/CD no GitHub Actions:
 find . -type f -name '*.sh' -print0 | xargs -0 -r shellcheck
 ```
 
-Para implantação, sempre separe:
-
-```text
-validate → plan/dry-run → apply → verify → rollback
-```
-
-Scripts perigosos devem ter modo `--dry-run` antes de alterar o sistema.
-
 ---
 
-## 13. Containers e automação reproduzível
+## 🎓 Conclusão e Próximos Passos
 
-A evolução natural dos scripts é executá-los em ambientes reproduzíveis.
+Agora que você conhece todos os princípios de engenharia, a estrutura de pastas e a metodologia de aprendizado:
 
-Conceitos a praticar:
-
-```text
-imagem → container → volume → rede → health check → logs → limites de recursos
-```
-
-Exemplo seguro de exploração:
-
-```bash
-docker run --rm -it ubuntu:latest bash
-```
-
-O `--rm` remove o container ao sair. Não use imagens não confiáveis em ambientes importantes e não coloque segredos em Dockerfiles.
-
-Quando houver aplicação ou serviço, adicione:
-
-```text
-Dockerfile
-compose.yaml
-.env.example
-README.md
-healthcheck
-```
-
----
-
-## 14. Segurança e DevSecOps no nível junior
-
-A segurança começa nos scripts:
-
-- Validar argumentos e caminhos.
-- Evitar `eval`.
-- Evitar interpolar entrada do usuário em comandos sem validação.
-- Usar `--` antes de nomes que podem começar com hífen.
-- Criar arquivos temporários com `mktemp`.
-- Restringir permissões de arquivos sensíveis.
-- Não registrar tokens e senhas nos logs.
-- Aplicar timeout em chamadas de rede.
-- Usar allowlist quando a entrada deve pertencer a um conjunto conhecido.
-
-Exemplo de arquivo temporário:
-
-```bash
-tmp_file="$(mktemp)"
-trap 'rm -f -- "$tmp_file"' EXIT
-printf 'dados temporários\n' > "$tmp_file"
-```
-
-Exemplo de validação de ambiente:
-
-```bash
-case "${ENVIRONMENT:-}" in
-  dev|test) ;;
-  prod)
-    printf 'Operação em produção exige revisão adicional.\n' >&2
-    exit 3
-    ;;
-  *)
-    printf 'Ambiente inválido. Use dev ou test.\n' >&2
-    exit 2
-    ;;
-esac
-```
-
----
-
-## 15. Troubleshooting e incidentes
-
-Cada falha deve virar um registro reproduzível:
-
-```text
-Data e hora:
-Host:
-Serviço afetado:
-Sintoma:
-Impacto:
-Última mudança conhecida:
-Comandos executados:
-Evidências:
-Hipótese:
-Mitigação:
-Causa raiz:
-Ação preventiva:
-```
-
-Sequência operacional:
-
-```text
-Detectar
-  ↓
-Investigar
-  ↓
-Conter ou mitigar
-  ↓
-Recuperar
-  ↓
-Validar
-  ↓
-Documentar
-  ↓
-Prevenir recorrência
-```
-
-Incidentes para simular apenas em laboratório:
-
-```text
-serviço parado
-arquivo de configuração inválido
-permissão incorreta
-disco quase cheio
-processo consumindo CPU
-DNS indisponível
-endpoint HTTP retornando erro
-job cron não executando
-backup não restaurável
-```
-
-Não provoque falhas em sistemas de terceiros ou produção sem autorização explícita.
-
----
-
-## 16. Plano de progressão sugerido
-
-| Fase | Conteúdo | Entrega |
-|---|---|---|
-| 1 | Terminal, arquivos, permissões e texto | 20 exercícios pequenos |
-| 2 | Bash, funções, argumentos e erros | 5 scripts reutilizáveis |
-| 3 | Processos, serviços, logs e systemd | monitor de serviços |
-| 4 | Rede, DNS e HTTP | health check completo |
-| 5 | Backup e restauração | backup-manager testado |
-| 6 | Git, ShellCheck e testes | pipeline de validação |
-| 7 | Cron e systemd timers | automação periódica com logs |
-| 8 | Docker e Compose | serviço reproduzível |
-| 9 | Ansible e Terraform | configuração/IaC declarativa |
-| 10 | Observabilidade e incidentes | métricas, logs, alertas e postmortem |
-
-Critério para avançar: não basta o script funcionar uma vez. Ele deve ser compreensível, repetível, testado, documentado e capaz de falhar de forma controlada.
-
----
-
-## 17. Checklist de qualidade para qualquer script
-
-Antes de considerar um script concluído:
-
-```text
-[ ] possui shebang correto
-[ ] possui README
-[ ] valida argumentos
-[ ] usa aspas nas variáveis
-[ ] trata caminhos com espaços
-[ ] retorna códigos de saída coerentes
-[ ] possui mensagens de erro úteis
-[ ] não expõe segredos
-[ ] usa timeout em rede
-[ ] é idempotente ou documenta a limitação
-[ ] possui modo dry-run quando altera estado
-[ ] foi validado com bash -n
-[ ] foi analisado pelo ShellCheck
-[ ] foi testado em cenário de sucesso
-[ ] foi testado em cenário de falha
-[ ] pode ser executado novamente
-[ ] registra o que mudou
-[ ] possui procedimento de limpeza ou rollback
-```
-
----
-
-## 18. Primeiro roteiro de execução
-
-A sequência inicial recomendada é:
-
-```bash
-cd /home/Projetos/Linux/junior
-
-# 1. Criar a estrutura de pastas deste documento.
-# 2. Criar um README em cada área que receber exercício.
-# 3. Implementar bash/fundamentos/hello.sh.
-# 4. Implementar bash/erros/template-seguro.sh.
-# 5. Implementar projects/system-inventory.
-# 6. Executar bash -n e shellcheck.
-# 7. Registrar evidências em evidence/.
-# 8. Criar um commit pequeno.
-# 9. Quebrar intencionalmente uma cópia em ambiente de teste.
-# 10. Criar o primeiro runbook de troubleshooting.
-```
-
-Exercício inicial recomendado:
-
-```bash
-mkdir -p bash/fundamentos/hello/{scripts,tests,evidence}
-cat > bash/fundamentos/hello/scripts/hello.sh <<'EOF'
-#!/usr/bin/env bash
-set -Eeuo pipefail
-
-name="${1:-Linux}"
-printf 'Olá, %s!\n' "$name"
-EOF
-chmod +x bash/fundamentos/hello/scripts/hello.sh
-bash -n bash/fundamentos/hello/scripts/hello.sh
-bash bash/fundamentos/hello/scripts/hello.sh DevOps
-```
-
-Saída esperada:
-
-```text
-Olá, DevOps!
-```
-
----
-
-## 19. Resultado esperado do laboratório
-
-Ao concluir esta etapa, você deverá conseguir:
-
-- Navegar e investigar um sistema Linux com segurança.
-- Escrever scripts Bash legíveis e robustos.
-- Automatizar tarefas administrativas repetitivas.
-- Diagnosticar processos, serviços, rede, DNS, disco e logs.
-- Criar health checks, inventários, backups e relatórios.
-- Agendar tarefas com cron e systemd timers.
-- Testar, validar e versionar scripts.
-- Trabalhar com idempotência, dry-run, logs e rollback.
-- Preparar scripts para CI/CD, containers e automação declarativa.
-- Registrar incidentes, evidências, causa raiz e prevenção.
-
-A trilha maior do repositório pode evoluir depois para Python, Ansible, Terraform, Docker, Kubernetes, observabilidade, SRE, DevSecOps e platform engineering. O fundamento, porém, será a capacidade de operar e automatizar Linux com Bash de maneira segura, reproduzível e observável.
-
----
-
-## 20. Regra final do repositório
-
-> **Toda tecnologia estudada precisa terminar em uma implementação prática, um teste, uma falha controlada, uma explicação e uma melhoria automatizada.**
-
-Esse padrão transforma o diretório `junior` em um laboratório de engenharia, e não somente em uma lista de comandos.
-
----
-
-*Documento inicial do laboratório Linux/DevOps — foco Bash e automação.*
+1. Acesse a pasta `projects/junior-01-fundamentos/hello-bash/`.
+2. Analise a arquitetura explicada no arquivo [04 - Lista de Pastas](04-lista-Pastas.md).
+3. Consulte o catálogo dos 139 projetos em [04 - Lista Geral](04-lista-geral.md).
+4. Bom aprendizado e excelente prática! 🚀

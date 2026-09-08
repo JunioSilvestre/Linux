@@ -1,0 +1,33 @@
+# =============================================================================
+# ARQUIVO: .gitignore
+# PROPÓSITO: Informa ao Git quais arquivos e diretórios NÃO devem ser
+#            rastreados nem commitados no repositório.
+#
+# O QUE IGNORAR:
+#   - .env            → configurações locais com possíveis segredos
+#   - *.log           → arquivos de log gerados em runtime
+#   - dist/           → artefatos de build gerados pelo Makefile
+#   - /tmp/           → arquivos temporários de teste
+#   - .DS_Store       → metadados do macOS (não relevantes para o projeto)
+#   - *.swp, *.swo    → arquivos temporários do editor Vim
+#
+# NUNCA COMMITAR:
+#   - Senhas, tokens de API, chaves SSH
+#   - Arquivos .env com configurações reais
+#   - Binários compilados ou gerados
+# =============================================================================
+
+# Configuração local sensível
+.env
+
+# Logs de runtime
+*.log
+logs/
+
+# Artefatos de build
+dist/
+
+# Temporários do sistema
+.DS_Store
+*.swp
+*.swo

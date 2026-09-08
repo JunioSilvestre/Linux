@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# =============================================================================
+# ARQUIVO: bin/hello-bash
+# PROPÓSITO: Entrypoint principal da CLI (ponto de entrada do usuário).
+#            É o arquivo que o usuário executa diretamente: ./bin/hello-bash
+#            Não tem extensão .sh — convenção de CLIs profissionais.
+#            Deve ter permissão de execução: chmod +x bin/hello-bash
+#
+# RESPONSABILIDADE:
+#   - Carregar as bibliotecas de lib/ (utils.sh, logger.sh)
+#   - Processar argumentos e flags passados pelo usuário
+#   - Orquestrar o fluxo principal do programa
+#   - NÃO deve conter lógica de negócio — apenas chama funções de lib/
+# =============================================================================
+
+set -Eeuo pipefail
+
+# Determinar o diretório raiz do projeto
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly SCRIPT_DIR
+
+# Carregar arquivo de ambiente se existir
+if [[ -f "${SCRIPT_DIR}/config/default.env" ]]; then
+  # shellcheck source=/dev/null
+  source "${SCRIPT_DIR}/config/default.env"
+fi
+
+# Carregar bibliotecas obrigatórias
+# shellcheck source=lib/logger.sh
+source "${SCRIPT_DIR}/lib/logger.sh"
+# shellcheck source=lib/utils.sh
+source "${SCRIPT_DIR}/lib/utils.sh"
+
+# Constantes da aplicação
+APP_NAME="${APP_NAME:-hello-bash}"
+APP_VERSION="${APP_VERSION:-1.0.0}"
+TARGET_NAME="${DEFAULT_NAME:-Mundo}"
+
+# Função de exibição do menu de ajuda
+show_help() {
+  cat <<EOF
+Uso: $(basename "$0") [OPÇÕES]
+
+Uma CLI de demonstração construída em Bash seguindo padrões corporativos de DevOps.
+
+Opções:
+  -n, --name NOME    Nome da pessoa a ser saudada (padrão: "Mundo")
+  -V, --verbose      Ativa o modo de depuração com mensagens detalhadas
+  --no-color         Desativa a formatação de cores ANSI nos logs
+  -v, --version      Exibe a versão do programa e encerra
+  -h, --help         Exibe este menu de ajuda e encerra
+
+Exemplos:
+  ./bin/hello-bash -n "Engenheiro DevOps"
+  ./bin/hello-bash --name "Linux" --verbose
+  DEBUG=1 ./bin/hello-bash
+EOF
+}
+
+# Função de exibição de versão
+show_version() {
+  printf "%s versão %s\n" "${APP_NAME}" "${APP_VERSION}"
+}
+
+# Processamento de argumentos e opções
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -n|--name)
+        if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
+          TARGET_NAME="$2"
+          shift 2
+        else
+          log::error "Opção '$1' requer um argumento válido."
+          exit 1
+        fi
+        ;;
+      -V|--verbose)
+        LOG_DEBUG_ENABLED=1
+        export DEBUG=1
+        shift
+        ;;
+      --no-color)
+        NO_COLOR=1
+        export NO_COLOR=1
+        shift
+        ;;
+      -v|--version)
+        show_version
+        exit 0
+        ;;
+      -h|--help)
+        show_help
+        exit 0
+        ;;
+      *)
+        log::error "Opção desconhecida: $1"
+        log::info "Execute '$(basename "$0") --help' para ver os comandos disponíveis."
+        exit 1
+        ;;
+    esac
+  done
+}
+
+# Função principal de execução
+main() {
+  parse_args "$@"
+
+  log::debug "Iniciando execução do ${APP_NAME}..."
+  log::debug "Diretório base: ${SCRIPT_DIR}"
+
+  utils::print_banner "${APP_NAME}" "${APP_VERSION}"
+  log::info "Inicializando módulo de saudação..."
+  log::success "Olá, ${TARGET_NAME}! Bem-vindo ao laboratório de Linux e Bash."
+  log::debug "Execução concluída com sucesso."
+}
+
+main "$@"

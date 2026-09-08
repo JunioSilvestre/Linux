@@ -1,0 +1,28 @@
+# =============================================================================
+# ARQUIVO: .shellcheckrc
+# PROPÓSITO: Configuração do ShellCheck — linter estático para scripts Bash.
+#            Define as regras de qualidade aplicadas durante o lint.
+#
+# O QUE CONFIGURA:
+#   - shell=bash              → informa ao ShellCheck que usamos Bash (não sh)
+#   - enable=all              → habilita todas as verificações disponíveis
+#   - external-sources=true   → verifica arquivos carregados via source/load
+#   - Exclusões de regras específicas via disable=SC####
+#
+# REGRAS COMUNS:
+#   SC2034 → variável declarada mas não usada
+#   SC2046 → aspas faltando em substituição de comando
+#   SC2086 → aspas faltando em expansão de variável
+#   SC2148 → shebang ausente
+#
+# EXECUÇÃO MANUAL:
+#   shellcheck bin/hello-bash lib/*.sh
+#   make lint
+#
+# REFERÊNCIA:
+#   https://github.com/koalaman/shellcheck/wiki/Checks
+# =============================================================================
+
+# shell=bash
+# enable=all
+# external-sources=true
