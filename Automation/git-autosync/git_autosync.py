@@ -396,6 +396,21 @@ class AutoSync:
         log(f"Commit gerado com sucesso: {commit_msg} ({head_after[:8]})")
 
         # 5. Push com verificação prévia segura e timeout de rede
+        self.push_pending_commits(file_count)
+
+    def has_unpushed_commits(self) -> bool:
+        """Verifica se existem commits locais ainda não enviados ao origin."""
+        branch = self.get_current_branch()
+        code, out, _ = self.run_cmd(
+            ["git", "rev-list", "--count", f"origin/{branch}..{branch}"], timeout=5
+        )
+        if code == 0 and out.strip().isdigit():
+            return int(out.strip()) > 0
+        return False
+
+    def push_pending_commits(self, file_count: int = 1) -> bool:
+        """Executa fetch, push e fallback de rebase seguro para commits pendentes."""
+        branch = self.get_current_branch()
         net_timeout = self.config.get("network_timeout_seconds", 15)
         log("Verificando atualizações remotas antes do push...")
 
@@ -410,7 +425,7 @@ class AutoSync:
                     "⚠️ Git AutoSync",
                     f"Salvo localmente ({file_count} arquivos). Modo offline.",
                 )
-            return
+            return False
 
         code, _, err = self.run_cmd(["git", "push", "origin", branch], timeout=net_timeout)
         if code == 0:
@@ -420,6 +435,7 @@ class AutoSync:
                     "✅ Git AutoSync",
                     f"{file_count} arquivo(s) sincronizados com o GitHub!",
                 )
+            return True
         else:
             log(f"Push rejeitado ({err}). Tentando rebase seguro...", "WARN")
             rebase_code, _, _ = self.run_cmd(
@@ -433,6 +449,7 @@ class AutoSync:
                     log("Rebase e Push concluídos com sucesso!", "SUCCESS")
                     if self.config.get("notify_macos"):
                         notify_macos("✅ Git AutoSync", "Sincronizado após rebase seguro.")
+                    return True
                 else:
                     log(f"Falha ao enviar mesmo após rebase: {push_err}", "ERROR")
             else:
@@ -446,6 +463,7 @@ class AutoSync:
                         "⚠️ Git AutoSync - Conflito",
                         "Conflito remoto detectado. Trabalho salvo localmente.",
                     )
+            return False
 
     def run(self) -> None:
         """Loop principal do daemon."""
@@ -497,11 +515,16 @@ class AutoSync:
                 else:
                     last_change_time = None
                     last_status_snapshot = ""
+                    # Se não há edições locais pendentes de commit, verifica se há commits não enviados (ex: modo offline recuperado)
+                    if self.has_unpushed_commits():
+                        log("Detectados commits locais pendentes de envio. Sincronizando com o GitHub...")
+                        self.push_pending_commits()
 
             except Exception as e:
                 log(f"Erro inesperado no ciclo de sincronização: {e}", "ERROR")
 
             time.sleep(poll_interval)
+
 
         if self.pid_file.exists():
             try:

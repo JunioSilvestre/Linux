@@ -23,3 +23,9 @@ Thumbs.db
 .autosync.pause
 .checkpoints.json
 Automation/git-autosync/logs/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
