@@ -1,0 +1,19 @@
+# Linux Git Ignore
+*.swp
+*.swo
+*~
+*.log
+*.tmp
+*.bak
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+id_rsa*
+id_ed25519*
+.DS_Store
+Thumbs.db
+.vscode/
+!.vscode/settings.json
