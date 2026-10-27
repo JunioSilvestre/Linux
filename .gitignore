@@ -17,3 +17,9 @@ id_ed25519*
 Thumbs.db
 .vscode/
 !.vscode/settings.json
+
+# Git AutoSync Daemon
+.autosync.pid
+.autosync.pause
+.checkpoints.json
+Automation/git-autosync/logs/
