@@ -1,0 +1,30 @@
+{
+  "poll_interval": 10,
+  "check_interval_seconds": 10,
+  "debounce_seconds": 15,
+  "network_timeout_seconds": 15,
+  "alert_cooldown_seconds": 300,
+  "notify_macos": true,
+  "max_checkpoints": 20,
+  "ignored_patterns": [
+    ".git/*",
+    ".DS_Store",
+    "*.swp",
+    "*.swo",
+    "*.tmp",
+    "*~",
+    "*.log",
+    "Automation/git-autosync/logs/*",
+    "Automation/git-autosync/.checkpoints.json",
+    "Automation/git-autosync/.autosync.pid",
+    "Automation/git-autosync/.autosync.pause"
+  ],
+  "sensitive_patterns": [
+    "(?i)(password|passwd|secret|api_key|token)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]",
+    "-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----",
+    "ghp_[A-Za-z0-9]{36}",
+    "AIza[0-9A-Za-z-_]{35}",
+    "xox[baprs]-[0-9a-zA-Z]{10,48}",
+    "AKIA[0-9A-Z]{16}"
+  ]
+}

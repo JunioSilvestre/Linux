@@ -1,0 +1,15 @@
+---
+- name: Enterprise Linux Baseline Hardening
+  hosts: all
+  become: true
+  tasks:
+    - name: Ensure Chrony time service is installed
+      package:
+        name: chrony
+        state: present
+
+    - name: Ensure Chrony is enabled and running
+      service:
+        name: chronyd
+        state: started
+        enabled: true
